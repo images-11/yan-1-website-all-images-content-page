@@ -16,6 +16,7 @@
     flex-direction:column;
     align-items:center;
     padding-bottom:60px;
+    overflow-y:scroll;
   }
   /* ---------- Top bar ---------- */
   #topBar{
@@ -157,6 +158,16 @@
     transition:background .25s ease;
   }
   #closeUpload:hover{background:#dc2626}
+  /* ---- Upload overlay – make iframe fill the whole space (100% width & height) ---- */
+  .upload-content{
+    flex:1;               /* take all remaining vertical space */
+    display:flex;        /* turn it into a flex container */
+    overflow:hidden;
+  }
+  .upload-iframe{
+    flex:1;               /* fill the flex‑container */
+    border:none;
+  }
 </style>
 </head>
 
@@ -447,8 +458,8 @@ function openUploadOverlay(){
   /* -------------------------------------------------------------
      CHANGE: Previously this loaded *images_displaying.html*.  It now
      loads *images_uploading.html* (which resides in the same repo).
-     The overlay already occupies the full viewport, providing the
-     desired 100 % screen experience.
+     The overlay already occupies the full viewport, and the iframe
+     CSS above forces it to fill the whole space – no more tiny grid.
      ------------------------------------------------------------- */
   UPLOAD_OVERLAY.classList.add('active');
   document.querySelector('.upload-iframe').src = 'images_uploading.html';
