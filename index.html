@@ -75,8 +75,10 @@
       border-radius: 0;                 /* flush left/right */
       overflow: hidden;
       background: #0f172a;
-      min-height: 450px;
     }
+
+    /* The embedded page will decide its own height – we start with nothing */
+    #iframeImages { min-height: 0; height: auto; }
 
     /* ---------- FULLSCREEN BUTTON ---------- */
     .fullscreen-btn {
@@ -234,6 +236,7 @@
     }
   </style>
 </head>
+
 <body class="p-4 sm:p-6 space-y-8">
 
   <!-- HEADER -->
@@ -308,7 +311,7 @@
 
   <!-- SCRIPTS -->
   <script>
-    // ----- Fullscreen handling -----
+    /* ----- Fullscreen handling ----- */
     function openFullscreen(iframeId) {
       const iframe = document.getElementById(iframeId);
       if (iframe.requestFullscreen) {
@@ -320,35 +323,54 @@
       }
     }
 
-    // ----- Chat‑modal logic -----
+    /* ----- Resize iframe to its content height ----- */
+    function resizeIframe() {
+      const iframe = document.getElementById('iframeImages');
+      try {
+        const doc = iframe.contentDocument || iframe.contentWindow.document;
+        const newH = Math.max(
+          doc.body.scrollHeight,
+          doc.documentElement.scrollHeight,
+          doc.body.offsetHeight,
+          doc.documentElement.offsetHeight,
+          doc.body.clientHeight,
+          doc.documentElement.clientHeight
+        );
+        iframe.style.height = newH + 'px';
+      } catch (e) {
+        // If the iframe is cross‑origin we cannot read its size
+        console.warn('Unable to auto‑resize iframe:', e);
+      }
+    }
+    document.getElementById('iframeImages').addEventListener('load', resizeIframe);
+    window.addEventListener('resize', resizeIframe);   // re‑calc on viewport change
+
+    /* ----- Chat‑modal logic ----- */
     const chatBot        = document.getElementById('chatBot');
-    const feedbackModal = document.getElementById('feedbackModal');
+    const feedbackModal  = document.getElementById('feedbackModal');
     const countdownEl   = document.getElementById('countdown');
     const redirectUrl   = 'https://github.com/OpenThoughtVoice/OpenThoughtVoice/discussions/2';
     let countdownTimer  = null;
 
     chatBot.addEventListener('click', () => {
-      // Show modal
       feedbackModal.classList.remove('hidden');
       feedbackModal.classList.add('flex');
 
-      // Initialise countdown
       let remaining = 5;
       countdownEl.textContent = remaining;
 
-      // Start timer
       countdownTimer = setInterval(() => {
         remaining--;
         countdownEl.textContent = remaining;
         if (remaining <= 0) {
           clearInterval(countdownTimer);
-          // ---- FIX: perform navigation instead of popup (prevents blocker) ----
+          // navigate to the discussion page
           window.location.href = redirectUrl;
         }
       }, 1000);
     });
 
-    // Clicking outside the modal closes it & stops the timer
+    // Close modal when clicking outside the content box
     feedbackModal.addEventListener('click', (e) => {
       if (e.target === feedbackModal) {
         feedbackModal.classList.add('hidden');
