@@ -16,7 +16,7 @@
     flex-direction:column;
     align-items:center;
     padding-bottom:60px;
-    overflow-y:scroll;
+    overflow-y:auto;
   }
   /* ---------- Top bar ---------- */
   #topBar{
@@ -158,16 +158,24 @@
     transition:background .25s ease;
   }
   #closeUpload:hover{background:#dc2626}
-  /* ---- Upload overlay – make iframe fill the whole space (100% width & height) ---- */
   .upload-content{
-    flex:1;               /* take all remaining vertical space */
-    display:flex;        /* turn it into a flex container */
+    flex:1;
+    display:flex;
     overflow:hidden;
   }
   .upload-iframe{
-    flex:1;               /* fill the flex‑container */
+    flex:1;
     border:none;
   }
+  /* ---------- Toast ---------- */
+  #toast{
+    position:fixed;bottom:24px;left:50%;transform:translateX(-50%);
+    background:rgba(30,30,30,.9);color:#fff;padding:10px 20px;
+    border-radius:8px;font-size:.9rem;opacity:0;pointer-events:none;
+    transition:opacity .3s ease;
+    z-index:3000;
+  }
+  #toast.show{opacity:1}
 </style>
 </head>
 
@@ -212,6 +220,9 @@
   </div>
 </div>
 
+<!-- Toast -->
+<div id="toast"></div>
+
 <script>
 /* ==================== UI references ==================== */
 const FEED          = document.getElementById('feed');
@@ -229,6 +240,7 @@ const UPLOAD_BTN        = document.getElementById('uploadBtn');
 const UPLOAD_OVERLAY    = document.getElementById('uploadOverlay');
 const CLOSE_UPLOAD      = document.getElementById('closeUpload');
 const BACK_BTN          = document.getElementById('backBtn');
+const TOAST             = document.getElementById('toast');
 
 /* ==================== Backend / Paging ==================== */
 const BACKEND_URL = 'https://images_displaying_backend.erenyeager6880.workers.dev';
@@ -238,7 +250,7 @@ let displayedCount = 0;
 let loading = false;
 let searchMode = 'title';    // 'title' (default), 'id', 'username'
 const BATCH_SIZE = 30;
-const SHARE_BASE_URL = 'https://yan-1-related-1.github.io/yan-1-website-shared-links-redirecting/all-images-content-page-shared-links-redirecting.html';
+const SHARE_BASE_URL = window.location.origin + window.location.pathname; // current page URL without query
 
 /* ==================== URL handling ==================== */
 const urlParams = new URLSearchParams(window.location.search);
@@ -263,6 +275,56 @@ function getFullImageUrl(item){
     if (id) return encodeURI(`https://archive.org/download/${id}/${id}.jpg`);
   }
   return getThumbnailUrl(item);
+}
+
+/* ==================== Toast ==================== */
+function showToast(message, duration = 2000){
+  TOAST.textContent = message;
+  TOAST.classList.add('show');
+  setTimeout(()=>TOAST.classList.remove('show'), duration);
+}
+
+/* ==================== Clipboard handling ==================== */
+function copyToClipboard(text){
+  if (navigator.clipboard && navigator.clipboard.writeText){
+    return navigator.clipboard.writeText(text);
+  }
+  // Fallback (for older browsers)
+  return new Promise((resolve, reject)=>{
+    const textarea = document.createElement('textarea');
+    textarea.value = text;
+    textarea.style.position = 'fixed';
+    textarea.style.left = '-9999px';
+    document.body.appendChild(textarea);
+    textarea.focus();
+    textarea.select();
+    try{
+      const ok = document.execCommand('copy');
+      ok ? resolve() : reject(new Error('Copy command failed'));
+    }catch(e){
+      reject(e);
+    }finally{
+      document.body.removeChild(textarea);
+    }
+  });
+}
+
+/* ==================== Share handling ==================== */
+function shareItem(item){
+  const link = `${SHARE_BASE_URL}?image_id=${encodeURIComponent(item.id)}`;
+  // First try the native Web Share API (mobile/modern browsers)
+  if (navigator.share){
+    navigator.share({
+      title: item.title || 'Image',
+      url: link
+    }).catch(err=>{
+      // If the share sheet fails (or the user cancels) fall back to copy
+      copyToClipboard(link).then(()=>showToast('Link copied!')).catch(()=>prompt('Copy this link', link));
+    });
+    return;
+  }
+  // Fallback: copy to clipboard and toast
+  copyToClipboard(link).then(()=>showToast('Link copied!')).catch(()=>prompt('Copy this link', link));
 }
 
 /* ==================== Card creation ==================== */
@@ -307,26 +369,20 @@ function createCard(item){
   shareBtn.className = 'share-btn';
   shareBtn.title = 'Share';
   shareBtn.innerHTML = '🔗';
-  shareBtn.onclick = (e)=>{
-    e.stopPropagation();
-    const link = `${SHARE_BASE_URL}?image_id=${encodeURIComponent(item.id)}`;
-    if (navigator.share){
-      navigator.share({title:item.title,url:link}).catch(err=>console.error('Share failed',err));
-    }else if (navigator.clipboard && navigator.clipboard.writeText){
-      navigator.clipboard.writeText(link).then(()=>alert('Link copied to clipboard'))
-        .catch(()=>prompt('Copy this link',link));
-    }else{
-      prompt('Copy this link',link);
-    }
-  };
+  shareBtn.addEventListener('click', e=>{
+    e.stopPropagation();          // prevent card‑click side‑effects
+    shareItem(item);
+  });
 
   const openBtn = document.createElement('button');
   openBtn.className = 'open-btn';
   openBtn.textContent = 'Open Image';
-  openBtn.onclick = () => openFullscreenImage(item.title,item.archive_url);
+  openBtn.addEventListener('click', ()=>{
+    openFullscreenImage(item.title,item.archive_url);
+  });
 
-  actions.append(shareBtn,openBtn);
-  card.append(wrapper,info,actions);
+  actions.append(shareBtn, openBtn);
+  card.append(wrapper, info, actions);
   return card;
 }
 
@@ -365,8 +421,10 @@ function renderAllData(){
 
 /* ==================== Infinite scroll ==================== */
 window.addEventListener('scroll',()=>{
-  if (window.innerHeight+window.scrollY >= document.body.offsetHeight-200){
-    if (displayedCount < currentData.length && !loading) renderNextBatch();
+  if (window.innerHeight+window.scrollY >= document.body.offsetHeight - 200){
+    if (displayedCount < currentData.length && !loading){
+      renderNextBatch();
+    }
   }
 });
 
@@ -396,8 +454,8 @@ function closeViewer(){
   applyScale();
 }
 CLOSE_VIEWER.onclick = closeViewer;
-document.addEventListener('keydown',e=>{
-  if (e.key==='Escape'){
+document.addEventListener('keydown', e=>{
+  if (e.key === 'Escape'){
     if (VIEWER.classList.contains('active')) closeViewer();
     if (UPLOAD_OVERLAY.classList.contains('active')) closeUpload();
   }
@@ -405,11 +463,11 @@ document.addEventListener('keydown',e=>{
 
 /* ----- wheel zoom ----- */
 const PDF_CONTENT = document.querySelector('.pdf-content');
-PDF_CONTENT.addEventListener('wheel',e=>{
-  e.preventDefault();
-  const factor = e.deltaY<0 ? 1.1 : 0.9;
+PDF_CONTENT.addEventListener('wheel', e=>{
+  e.preventDefault(); // prevent page scroll while zooming the iframe
+  const factor = e.deltaY < 0 ? 1.1 : 0.9;
   const newScale = Math.min(MAX_SCALE, Math.max(MIN_SCALE, currentScale*factor));
-  if (newScale!==currentScale){
+  if (newScale !== currentScale){
     const rect = PDF_FRAME.getBoundingClientRect();
     const cx = e.clientX - rect.left;
     const cy = e.clientY - rect.top;
@@ -431,36 +489,30 @@ function getDist(t1,t2){
   const dy = t2.clientY - t1.clientY;
   return Math.hypot(dx,dy);
 }
-PDF_CONTENT.addEventListener('touchstart',e=>{
+PDF_CONTENT.addEventListener('touchstart', e=>{
   if (e.touches.length===2){
-    pinchStartDist = getDist(e.touches[0],e.touches[1]);
+    pinchStartDist = getDist(e.touches[0], e.touches[1]);
     pinchStartScale = currentScale;
     e.preventDefault();
   }
 },{passive:false});
-PDF_CONTENT.addEventListener('touchmove',e=>{
+PDF_CONTENT.addEventListener('touchmove', e=>{
   if (e.touches.length===2 && pinchStartDist){
-    const cur = getDist(e.touches[0],e.touches[1]);
+    const cur = getDist(e.touches[0], e.touches[1]);
     const scale = Math.min(MAX_SCALE, Math.max(MIN_SCALE, pinchStartScale * (cur/pinchStartDist)));
-    if (scale!==currentScale){
+    if (scale !== currentScale){
       currentScale = scale;
       applyScale();
     }
     e.preventDefault();
   }
 },{passive:false});
-PDF_CONTENT.addEventListener('touchend',e=>{
-  if (e.touches.length<2) pinchStartDist = null;
+PDF_CONTENT.addEventListener('touchend', e=>{
+  if (e.touches.length < 2) pinchStartDist = null;
 });
 
 /* ==================== Upload overlay ==================== */
 function openUploadOverlay(){
-  /* -------------------------------------------------------------
-     CHANGE: Previously this loaded *images_displaying.html*.  It now
-     loads *images_uploading.html* (which resides in the same repo).
-     The overlay already occupies the full viewport, and the iframe
-     CSS above forces it to fill the whole space – no more tiny grid.
-     ------------------------------------------------------------- */
   UPLOAD_OVERLAY.classList.add('active');
   document.querySelector('.upload-iframe').src = 'images_uploading.html';
 }
@@ -475,8 +527,8 @@ CLOSE_UPLOAD.onclick = closeUpload;
 function applyFilter(){
   const query = SEARCH_INPUT.value.trim();
 
-  // empty query + default mode → full feed
-  if (!query && searchMode==='title'){
+  // Empty query while in default (title) mode → show everything
+  if (!query && searchMode === 'title'){
     currentData = allData;
     BACK_BTN.style.display='none';
     FEED.innerHTML='';
@@ -485,13 +537,13 @@ function applyFilter(){
     return;
   }
 
-  if (searchMode==='title'){
+  if (searchMode === 'title'){
     const q = query.toLowerCase();
     currentData = allData.filter(it=> (it.title||'').toLowerCase().includes(q));
-  }else if (searchMode==='id'){
+  }else if (searchMode === 'id'){
     const q = query.toLowerCase();
-    currentData = allData.filter(it=> ((it.id??'').toString().toLowerCase()).includes(q));
-  }else if (searchMode==='username'){
+    currentData = allData.filter(it=> ((it.id ?? '').toString().toLowerCase()).includes(q));
+  }else if (searchMode === 'username'){
     const q = query.toLowerCase();
     currentData = allData.filter(it=> (it.username||'').toLowerCase().includes(q));
   }
@@ -501,11 +553,11 @@ function applyFilter(){
   renderNextBatch();
   BACK_BTN.style.display='inline-block';
 }
-SEARCH_BTN.addEventListener('click',applyFilter);
-SEARCH_INPUT.addEventListener('keydown',e=>{if(e.key==='Enter')applyFilter();});
+SEARCH_BTN.addEventListener('click', applyFilter);
+SEARCH_INPUT.addEventListener('keydown', e=>{ if(e.key === 'Enter') applyFilter(); });
 
 /* ---------- Back button ---------- */
-BACK_BTN.addEventListener('click',()=>{
+BACK_BTN.addEventListener('click', ()=>{
   SEARCH_INPUT.value='';
   searchMode='title';
   SEARCH_INPUT.placeholder='Search by title...';
@@ -522,37 +574,37 @@ BACK_BTN.addEventListener('click',()=>{
 });
 
 /* ---------- Search menu toggle ---------- */
-SEARCH_TOGGLE.addEventListener('click',()=>{
+SEARCH_TOGGLE.addEventListener('click', ()=>{
   const showing = SEARCH_MENU.classList.toggle('show');
-  SEARCH_TOGGLE.classList.toggle('active',showing);
+  SEARCH_TOGGLE.classList.toggle('active', showing);
 });
 
 /* ---------- Filter selection (ID / Username) ---------- */
-SEARCH_MENU.addEventListener('click',e=>{
+SEARCH_MENU.addEventListener('click', e=>{
   if (e.target.classList.contains('search-filter-btn')){
     const mode = e.target.dataset.mode;
-    if (mode){
-      if (searchMode===mode){
-        searchMode='title';
-        SEARCH_INPUT.placeholder='Search by title...';
-        e.target.classList.remove('active');
-      }else{
-        searchMode=mode;
-        SEARCH_INPUT.placeholder = mode==='id' ? 'Enter ID...' : 'Enter username...';
-        document.querySelectorAll('.search-filter-btn').forEach(b=>b.classList.remove('active'));
-        e.target.classList.add('active');
-      }
-      SEARCH_MENU.classList.remove('show');
-      SEARCH_TOGGLE.classList.remove('active');
+    if (!mode) return;
+    if (searchMode===mode){
+      // toggle back to default search
+      searchMode='title';
+      SEARCH_INPUT.placeholder='Search by title...';
+      e.target.classList.remove('active');
+    }else{
+      searchMode=mode;
+      SEARCH_INPUT.placeholder = (mode==='id' ? 'Enter ID...' : 'Enter username...');
+      document.querySelectorAll('.search-filter-btn').forEach(b=>b.classList.remove('active'));
+      e.target.classList.add('active');
     }
+    SEARCH_MENU.classList.remove('show');
+    SEARCH_TOGGLE.classList.remove('active');
   }
 });
 
 /* ==================== Direct‑link handling ==================== */
 function openImageById(id){
-  const item = allData.find(it=> (it.id??'').toString()===id);
+  const item = allData.find(it=> (it.id ?? '').toString()===id);
   if (item){
-    openFullscreenImage(item.title,item.archive_url);
+    openFullscreenImage(item.title, item.archive_url);
   }
 }
 
@@ -570,19 +622,18 @@ async function fetchData(){
     currentData = allData;
 
     if (targetImageId){
-      // Build the whole feed so the target card exists
+      // Show the whole list so the target card exists
       renderAllData();
 
-      // Find the matching item
-      const targetItem = allData.find(it=> (it.id??'').toString()===targetImageId);
+      const targetItem = allData.find(it=> (it.id ?? '').toString()===targetImageId);
       if (targetItem){
-        // Ensure the card is scrolled into view (highlight already added)
+        // Highlighted already – scroll into view
         const cardEl = document.querySelector(`.card[data-id="${targetImageId}"]`);
         if (cardEl){
           cardEl.scrollIntoView({behavior:'smooth',block:'center'});
         }
-        // Open the viewer a short moment after the scroll starts
-        setTimeout(()=>openFullscreenImage(targetItem.title,targetItem.archive_url), 600);
+        // Then open the viewer after a short delay
+        setTimeout(()=>openFullscreenImage(targetItem.title, targetItem.archive_url), 600);
       }
     }else{
       renderNextBatch();
