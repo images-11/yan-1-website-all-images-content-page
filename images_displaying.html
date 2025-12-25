@@ -1,16 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport"
-      content="width=device-width,initial-scale=1.0,maximum-scale=5,user-scalable=yes" />
+<meta charset="UTF-8">
 <title>📚 Image Stream</title>
-
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap"
-      rel="stylesheet">
-
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=5,user-scalable=yes">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
 <style>
-  *{box-sizing:border-box;margin:0;padding:0;}
+  *{box-sizing:border-box;margin:0;padding:0}
   body{
     font-family:'Poppins',sans-serif;
     background:linear-gradient(135deg,#0f172a,#1e293b);
@@ -23,54 +19,41 @@
   }
   /* ---------- Top bar ---------- */
   #topBar{
-    width:100%;
-    padding:10px 16px;
-    display:flex;
-    align-items:center;
-    gap:8px;
-    background:rgba(255,255,255,0.08);
-    backdrop-filter:blur(12px);
-    box-shadow:0 2px 8px rgba(0,0,0,.3);
-    position:sticky;
-    top:0;
-    z-index:1000;
+    width:100%;padding:10px 16px;display:flex;align-items:center;gap:8px;
+    background:rgba(255,255,255,0.08);backdrop-filter:blur(12px);
+    box-shadow:0 2px 8px rgba(0,0,0,.3);position:sticky;top:0;z-index:1000;
   }
   #topBar button{
-    border:none;
-    cursor:pointer;
-    border-radius:6px;
-    font-size:.95rem;
-    padding:6px 12px;
-    transition:background .25s ease;
+    border:none;cursor:pointer;border-radius:6px;font-size:.95rem;
+    padding:6px 12px;transition:background .25s ease;
   }
-  #searchBtn{background:#60a5fa;color:#fff;}
-  #searchBtn:hover{background:#3b82f6;}
-  #uploadBtn{background:#34d399;color:#fff;}
-  #uploadBtn:hover{background:#10b981;}
+  #searchBtn{background:#60a5fa;color:#fff}
+  #searchBtn:hover{background:#3b82f6}
+  #uploadBtn{background:#34d399;color:#fff}
+  #uploadBtn:hover{background:#10b981}
   #backBtn{
     background:#64748b;color:#fff;display:none;margin-right:8px;
   }
-  #backBtn:hover{background:#374151;}
+  #backBtn:hover{background:#374151}
   #searchToggle{
     background:transparent;color:#60a5fa;font-size:1.2rem;width:auto;padding:0 4px;line-height:1;
   }
-  #searchToggle.active{transform:rotate(90deg);transition:transform .2s;}
+  #searchToggle.active{transform:rotate(90deg);transition:transform .2s}
   #searchMenu{
     position:absolute;top:calc(100% + 6px);left:0;
     background:rgba(15,23,42,.95);border:1px solid rgba(255,255,255,.2);
     border-radius:6px;padding:4px 0;display:none;min-width:120px;z-index:100;
   }
-  #searchMenu.show{display:block;}
+  #searchMenu.show{display:block}
   .search-filter-btn{
     background:none;border:none;color:#94a3b8;width:100%;text-align:left;
     padding:6px 12px;cursor:pointer;font-size:.85rem;
   }
-  .search-filter-btn:hover{background:rgba(255,255,255,.1);}
-  .search-filter-btn.active{color:#60a5fa;}
+  .search-filter-btn:hover{background:rgba(255,255,255,.1)}
+  .search-filter-btn.active{color:#60a5fa}
   /* ---------- Feed ---------- */
   #feed{
-    display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
+    display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
     gap:16px;width:92%;max-width:1300px;margin-top:24px;
   }
   .card{
@@ -87,16 +70,14 @@
     width:100%;aspect-ratio:16/9;border-radius:12px;
     overflow:hidden;background:#1e293b;display:flex;align-items:center;justify-content:center;
   }
-  .preview img{width:100%;height:100%;object-fit:cover;}
-  .preview-wrapper{position:relative;width:100%;}
+  .preview img{width:100%;height:100%;object-fit:cover}
+  .preview-wrapper{position:relative;width:100%}
   .ellipsis-overlay{
-    position:absolute;top:4px;left:4px;color:#ff4500;
-    font-size:1.8em;font-weight:bold;pointer-events:none;
+    position:absolute;top:4px;left:4px;color:#ff4500;font-size:1.8em;font-weight:bold;pointer-events:none;
   }
-  .info{margin-top:10px;}
+  .info{margin-top:10px}
   .title{
-    font-size:1em;font-weight:600;color:#f8fafc;margin-bottom:4px;line-height:1.4;
-    word-break:break-word;
+    font-size:1em;font-weight:600;color:#f8fafc;margin-bottom:4px;line-height:1.4;word-break:break-word;
   }
   .meta{
     font-size:.85em;color:#94a3b8;word-break:break-word;
@@ -108,43 +89,47 @@
     background:none;border:none;color:#94a3b8;cursor:pointer;
     font-size:1.2rem;margin-right:6px;transition:color .2s;
   }
-  .share-btn:hover{color:#60a5fa;}
+  .share-btn:hover{color:#60a5fa}
   .open-btn{
     margin-top:0;background:#60a5fa;color:#fff;border:none;border-radius:8px;
     padding:10px;font-weight:500;cursor:pointer;transition:background .25s ease;
     font-size:.95em;flex-grow:1;
   }
-  .open-btn:hover{background:#3b82f6;}
+  .open-btn:hover{background:#3b82f6}
   .loader{
     margin-top:60px;border:6px solid rgba(255,255,255,.2);
     border-top:6px solid #60a5fa;border-radius:50%;width:45px;height:45px;
     animation:spin 1s linear infinite;
   }
-  @keyframes spin{0%{transform:rotate(0);}100%{transform:rotate(360deg);}}
+  @keyframes spin{0%{transform:rotate(0)}100%{transform:rotate(360deg)}}
   footer{
     margin-top:30px;color:#94a3b8;font-size:.9em;text-align:center;
   }
-  /* ---------- Full‑screen image viewer ---------- */
+  /* ---------- Full‑screen viewer ---------- */
   .pdf-viewer{
-    position:fixed;inset:0;background:#0f172a;z-index:999;
+    position:fixed;inset:0;background:#0f172a;z-index:2000;
     display:none;flex-direction:column;
   }
-  .pdf-viewer.active{display:flex;}
+  .pdf-viewer.active{display:flex}
   .pdf-toolbar{
+    position:relative;
     display:flex;justify-content:space-between;align-items:center;
     padding:10px 14px;background:rgba(15,23,42,.9);
     border-bottom:1px solid rgba(255,255,255,.1);
+    z-index:10;
   }
   .pdf-toolbar h2{
+    margin:0;
     font-size:1em;color:#93c5fd;font-weight:500;
     overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:80%;
   }
-  .close-full{
+  #closeViewer{
+    position:absolute;top:12px;right:14px;
     background:#ef4444;border:none;color:#fff;font-size:1.2em;
     width:36px;height:36px;border-radius:50%;cursor:pointer;
-    transition:background .25s ease;
+    transition:background .25s ease;z-index:2005;
   }
-  .close-full:hover{background:#dc2626;}
+  #closeViewer:hover{background:#dc2626}
   .pdf-content{
     flex-grow:1;overflow:auto;touch-action:none;
   }
@@ -153,26 +138,33 @@
   }
   /* ---------- Full‑screen upload overlay ---------- */
   .full-screen{
-    position:fixed;inset:0;background:#0f172a;z-index:999;
+    position:fixed;inset:0;background:#0f172a;z-index:2000;
     display:none;flex-direction:column;
   }
-  .full-screen.active{display:flex;}
+  .full-screen.active{display:flex}
   .upload-toolbar{
+    position:relative;
     display:flex;justify-content:space-between;align-items:center;
     padding:10px 14px;background:rgba(15,23,42,.9);
     border-bottom:1px solid rgba(255,255,255,.1);
   }
   .upload-toolbar h2{
-    font-size:1rem;color:#93c5fd;margin:0;
+    margin:0;font-size:1rem;color:#93c5fd;
   }
+  #closeUpload{
+    background:#ef4444;border:none;color:#fff;font-size:1.2em;
+    width:36px;height:36px;border-radius:50%;cursor:pointer;
+    transition:background .25s ease;
+  }
+  #closeUpload:hover{background:#dc2626}
 </style>
 </head>
 
 <body>
-<!-- ---------- Top Bar (search + upload) ---------- -->
+<!-- ---------- Top Bar ---------- -->
 <div id="topBar">
   <button id="backBtn">← Back</button>
-  <input type="text" id="searchInput" placeholder="Search by title..." autocomplete="off" />
+  <input type="text" id="searchInput" placeholder="Search by title..." autocomplete="off">
   <button id="searchBtn">Search</button>
   <button id="searchToggle">▶</button>
   <div id="searchMenu">
@@ -187,7 +179,7 @@
 
 <footer>© 2026 Powered by Archive &amp; Your Backend</footer>
 
-<!-- Fullscreen Image Viewer -->
+<!-- Full‑screen image viewer -->
 <div id="pdfViewer" class="pdf-viewer">
   <div class="pdf-toolbar">
     <h2 id="pdfTitle">Image Viewer</h2>
@@ -198,7 +190,7 @@
   </div>
 </div>
 
-<!-- Full‑screen Upload Overlay -->
+<!-- Full‑screen upload overlay -->
 <div id="uploadOverlay" class="full-screen">
   <div class="upload-toolbar">
     <h2>Upload Images</h2>
@@ -210,9 +202,7 @@
 </div>
 
 <script>
-/* --------------------------------------------------------------
-   UI references
--------------------------------------------------------------- */
+/* ==================== UI references ==================== */
 const FEED          = document.getElementById('feed');
 const LOADER        = document.getElementById('loader');
 const VIEWER        = document.getElementById('pdfViewer');
@@ -229,29 +219,22 @@ const UPLOAD_OVERLAY    = document.getElementById('uploadOverlay');
 const CLOSE_UPLOAD      = document.getElementById('closeUpload');
 const BACK_BTN          = document.getElementById('backBtn');
 
-/* --------------------------------------------------------------
-   Backend / paging
--------------------------------------------------------------- */
+/* ==================== Backend / Paging ==================== */
 const BACKEND_URL = 'https://images_displaying_backend.erenyeager6880.workers.dev';
-let allData = [],                 // raw data from backend
-    currentData = [],             // data after filter (null = all)
-    displayedCount = 0,
-    loading = false,
-    searchMode = 'title';         // 'title' (default), 'id', 'username'
+let allData = [];            // raw data from backend
+let currentData = [];        // filtered view (null === all)
+let displayedCount = 0;
+let loading = false;
+let searchMode = 'title';    // 'title' (default), 'id', 'username'
 const BATCH_SIZE = 30;
-
 const SHARE_BASE_URL = 'https://yan-1-related-1.github.io/yan-1-website-shared-links-redirecting/all-images-content-page-shared-links-redirecting.html';
 
-/* --------------------------------------------------------------
-   Query‑string handling (for direct links)
--------------------------------------------------------------- */
+/* ==================== URL handling ==================== */
 const urlParams = new URLSearchParams(window.location.search);
 const targetImageId = urlParams.get('image_id');   // may be null
 let targetScrolled = false;
 
-/* --------------------------------------------------------------
-   Helper – thumbnail URL
--------------------------------------------------------------- */
+/* ==================== Helpers ==================== */
 function getThumbnailUrl(item){
   if (item.archive_url && item.archive_url.includes('archive.org/details/')){
     const id = item.archive_url.split('/details/')[1]?.split(/[/?#]/)[0];
@@ -259,39 +242,25 @@ function getThumbnailUrl(item){
   }
   return '';
 }
-
-/* --------------------------------------------------------------
-   Helper – full‑image URL (direct file or guessed)
--------------------------------------------------------------- */
 function getFullImageUrl(item){
-  const raw = (item.archive_url || '').trim();
+  const raw = (item.archive_url||'').trim();
   if (!raw) return '';
   const low = raw.toLowerCase();
-
-  // direct image file
-  if (/\.(png|jpe?g|gif|webp|svg)$/i.test(low)) {
-    return encodeURI(raw);
-  }
-
-  // archive.org details → guess a JPG
-  if (raw.includes('archive.org/details/')) {
+  if (/\.(png|jpe?g|gif|webp|svg)$/i.test(low)) return encodeURI(raw);
+  if (raw.includes('archive.org/details/')){
     const id = raw.split('/details/')[1]?.split(/[/?#]/)[0];
     if (id) return encodeURI(`https://archive.org/download/${id}/${id}.jpg`);
   }
-
-  // fallback thumbnail
   return getThumbnailUrl(item);
 }
 
-/* --------------------------------------------------------------
-   Card creation (used by both batch & full render)
--------------------------------------------------------------- */
+/* ==================== Card creation ==================== */
 function createCard(item){
   const card = document.createElement('div');
   card.className = 'card';
   card.dataset.id = item.id || '';
 
-  /* ----- thumbnail preview (with optional “...” overlay) ----- */
+  // ----- thumbnail -----
   const thumbUrl = getThumbnailUrl(item);
   const preview = document.createElement('div');
   preview.className = 'preview';
@@ -303,7 +272,6 @@ function createCard(item){
   const wrapper = document.createElement('div');
   wrapper.className = 'preview-wrapper';
   wrapper.appendChild(preview);
-
   const low = (item.archive_url||'').toLowerCase();
   if (low.endsWith('.png') || low.endsWith('.jpg')){
     const ellipsis = document.createElement('div');
@@ -312,7 +280,7 @@ function createCard(item){
     wrapper.appendChild(ellipsis);
   }
 
-  /* ----- info block ----- */
+  // ----- info -----
   const info = document.createElement('div');
   info.className = 'info';
   info.innerHTML = `
@@ -320,76 +288,61 @@ function createCard(item){
     <div class="meta">👤 ${item.username || 'Anonymous'} • 🆔 ${item.id || 'N/A'}</div>
   `;
 
-  /* ----- actions (share + open) ----- */
+  // ----- actions -----
   const actions = document.createElement('div');
   actions.className = 'action-bar';
 
-  // Share button (tiny)
   const shareBtn = document.createElement('button');
   shareBtn.className = 'share-btn';
   shareBtn.title = 'Share';
   shareBtn.innerHTML = '🔗';
-  shareBtn.onclick = (e) => {
+  shareBtn.onclick = (e)=>{
     e.stopPropagation();
     const link = `${SHARE_BASE_URL}?image_id=${encodeURIComponent(item.id)}`;
     if (navigator.share){
-      navigator.share({title: item.title, url: link}).catch(err=>console.error('Share failed', err));
+      navigator.share({title:item.title,url:link}).catch(err=>console.error('Share failed',err));
     }else if (navigator.clipboard && navigator.clipboard.writeText){
       navigator.clipboard.writeText(link).then(()=>alert('Link copied to clipboard'))
-        .catch(err=>{console.error('Copy failed',err);prompt('Copy this link',link);});
+        .catch(()=>prompt('Copy this link',link));
     }else{
-      prompt('Copy this link', link);
+      prompt('Copy this link',link);
     }
   };
 
-  // Open button (full‑screen viewer)
   const openBtn = document.createElement('button');
   openBtn.className = 'open-btn';
   openBtn.textContent = 'Open Image';
-  openBtn.onclick = () => openFullscreenImage(item.title, item.archive_url);
+  openBtn.onclick = () => openFullscreenImage(item.title,item.archive_url);
 
-  actions.appendChild(shareBtn);
-  actions.appendChild(openBtn);
-
-  // Assemble card
-  card.append(wrapper, info, actions);
+  actions.append(shareBtn,openBtn);
+  card.append(wrapper,info,actions);
   return card;
 }
 
-/* --------------------------------------------------------------
-   Render a batch of cards (30 at a time)
--------------------------------------------------------------- */
+/* ==================== Rendering ==================== */
 function renderNextBatch(){
   if (loading) return;
   loading = true;
-
-  const batch = currentData.slice(displayedCount, displayedCount + BATCH_SIZE);
-  batch.forEach(item => {
+  const batch = currentData.slice(displayedCount, displayedCount+BATCH_SIZE);
+  batch.forEach(item=>{
     const card = createCard(item);
     FEED.appendChild(card);
-
-    // Highlight + scroll to target if we arrived via a shared link
-    if (!targetScrolled && targetImageId && item.id && item.id === targetImageId){
+    if (!targetScrolled && targetImageId && item.id && item.id===targetImageId){
       card.classList.add('highlight');
       setTimeout(()=>card.scrollIntoView({behavior:'smooth',block:'center'}),0);
       targetScrolled = true;
     }
   });
-
   displayedCount += batch.length;
   loading = false;
 }
-
-/* --------------------------------------------------------------
-   Render all cards (used when a direct link is opened)
--------------------------------------------------------------- */
 function renderAllData(){
   if (loading) return;
   loading = true;
-  currentData.forEach(item => {
+  currentData.forEach(item=>{
     const card = createCard(item);
     FEED.appendChild(card);
-    if (!targetScrolled && targetImageId && item.id && item.id === targetImageId){
+    if (!targetScrolled && targetImageId && item.id && item.id===targetImageId){
       card.classList.add('highlight');
       setTimeout(()=>card.scrollIntoView({behavior:'smooth',block:'center'}),0);
       targetScrolled = true;
@@ -399,28 +352,21 @@ function renderAllData(){
   loading = false;
 }
 
-/* --------------------------------------------------------------
-   Infinite scroll (uses the filtered list)
--------------------------------------------------------------- */
-window.addEventListener('scroll', () => {
-  if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 200) {
+/* ==================== Infinite scroll ==================== */
+window.addEventListener('scroll',()=>{
+  if (window.innerHeight+window.scrollY >= document.body.offsetHeight-200){
     if (displayedCount < currentData.length && !loading) renderNextBatch();
   }
 });
 
-/* --------------------------------------------------------------
-   Full‑screen image viewer (unchanged)
--------------------------------------------------------------- */
+/* ==================== Full‑screen viewer ==================== */
 let currentScale = 1;
 const MIN_SCALE = 0.5;
 const MAX_SCALE = 5;
-
 function applyScale(){
   PDF_FRAME.style.transform = `scale(${currentScale})`;
   PDF_FRAME.style.transformOrigin = '0 0';
 }
-
-/* open image in fullscreen viewer */
 function openFullscreenImage(title, archiveUrl){
   if (!archiveUrl) return;
   const embedUrl = archiveUrl.includes('archive.org')
@@ -432,8 +378,6 @@ function openFullscreenImage(title, archiveUrl){
   currentScale = 1;
   applyScale();
 }
-
-/* close viewer */
 function closeViewer(){
   VIEWER.classList.remove('active');
   PDF_FRAME.src = '';
@@ -441,8 +385,8 @@ function closeViewer(){
   applyScale();
 }
 CLOSE_VIEWER.onclick = closeViewer;
-document.addEventListener('keydown', e => {
-  if (e.key === 'Escape'){
+document.addEventListener('keydown',e=>{
+  if (e.key==='Escape'){
     if (VIEWER.classList.contains('active')) closeViewer();
     if (UPLOAD_OVERLAY.classList.contains('active')) closeUpload();
   }
@@ -450,21 +394,21 @@ document.addEventListener('keydown', e => {
 
 /* ----- wheel zoom ----- */
 const PDF_CONTENT = document.querySelector('.pdf-content');
-PDF_CONTENT.addEventListener('wheel', e => {
+PDF_CONTENT.addEventListener('wheel',e=>{
   e.preventDefault();
-  const factor = e.deltaY < 0 ? 1.1 : 0.9;
-  const newScale = Math.min(MAX_SCALE, Math.max(MIN_SCALE, currentScale * factor));
-  if (newScale !== currentScale){
+  const factor = e.deltaY<0 ? 1.1 : 0.9;
+  const newScale = Math.min(MAX_SCALE, Math.max(MIN_SCALE, currentScale*factor));
+  if (newScale!==currentScale){
     const rect = PDF_FRAME.getBoundingClientRect();
     const cx = e.clientX - rect.left;
     const cy = e.clientY - rect.top;
     const scrollL = PDF_CONTENT.scrollLeft;
     const scrollT = PDF_CONTENT.scrollTop;
-    const ratio = newScale / currentScale;
+    const ratio = newScale/currentScale;
     currentScale = newScale;
     applyScale();
-    PDF_CONTENT.scrollLeft = (cx + scrollL) * ratio - cx;
-    PDF_CONTENT.scrollTop  = (cy + scrollT) * ratio - cy;
+    PDF_CONTENT.scrollLeft = (cx+scrollL)*ratio - cx;
+    PDF_CONTENT.scrollTop  = (cy+scrollT)*ratio - cy;
   }
 },{passive:false});
 
@@ -476,167 +420,160 @@ function getDist(t1,t2){
   const dy = t2.clientY - t1.clientY;
   return Math.hypot(dx,dy);
 }
-PDF_CONTENT.addEventListener('touchstart', e => {
+PDF_CONTENT.addEventListener('touchstart',e=>{
   if (e.touches.length===2){
-    pinchStartDist = getDist(e.touches[0], e.touches[1]);
+    pinchStartDist = getDist(e.touches[0],e.touches[1]);
     pinchStartScale = currentScale;
     e.preventDefault();
   }
 },{passive:false});
-PDF_CONTENT.addEventListener('touchmove', e => {
+PDF_CONTENT.addEventListener('touchmove',e=>{
   if (e.touches.length===2 && pinchStartDist){
-    const curDist = getDist(e.touches[0], e.touches[1]);
-    const scaleFactor = curDist / pinchStartDist;
-    const newScale = Math.min(MAX_SCALE, Math.max(MIN_SCALE, pinchStartScale * scaleFactor));
-    if (newScale !== currentScale){
-      currentScale = newScale;
+    const cur = getDist(e.touches[0],e.touches[1]);
+    const scale = Math.min(MAX_SCALE, Math.max(MIN_SCALE, pinchStartScale * (cur/pinchStartDist)));
+    if (scale!==currentScale){
+      currentScale = scale;
       applyScale();
     }
     e.preventDefault();
   }
 },{passive:false});
-PDF_CONTENT.addEventListener('touchend', e => {
+PDF_CONTENT.addEventListener('touchend',e=>{
   if (e.touches.length<2) pinchStartDist = null;
 });
 
-/* --------------------------------------------------------------
-   Upload overlay handling
--------------------------------------------------------------- */
+/* ==================== Upload overlay ==================== */
 function openUploadOverlay(){
   UPLOAD_OVERLAY.classList.add('active');
-  const iframe = document.querySelector('.upload-iframe');
-  iframe.src = 'images_uploading.html';
+  document.querySelector('.upload-iframe').src = 'images_displaying.html';
 }
 function closeUpload(){
   UPLOAD_OVERLAY.classList.remove('active');
-  const iframe = document.querySelector('.upload-iframe');
-  iframe.src = '';
+  document.querySelector('.upload-iframe').src = '';
 }
 UPLOAD_BTN.onclick = openUploadOverlay;
 CLOSE_UPLOAD.onclick = closeUpload;
 
-/* --------------------------------------------------------------
-   Search / filter handling (fixed ID‑search)
--------------------------------------------------------------- */
+/* ==================== Search / filter ==================== */
 function applyFilter(){
   const query = SEARCH_INPUT.value.trim();
 
-  // No query → reset to full list (only when we’re in the default “title” mode)
-  if (!query && searchMode === 'title'){
+  // empty query + default mode → full feed
+  if (!query && searchMode==='title'){
     currentData = allData;
-    BACK_BTN.style.display = 'none';
-    FEED.innerHTML = '';
-    displayedCount = 0;
+    BACK_BTN.style.display='none';
+    FEED.innerHTML='';
+    displayedCount=0;
     renderNextBatch();
     return;
   }
 
-  // Build filtered list based on the current mode
-  if (searchMode === 'title'){
+  if (searchMode==='title'){
     const q = query.toLowerCase();
-    currentData = allData.filter(item => (item.title||'').toLowerCase().includes(q));
-  }else if (searchMode === 'id'){
-    // IDs can be numeric – compare as strings and allow partial matches
+    currentData = allData.filter(it=> (it.title||'').toLowerCase().includes(q));
+  }else if (searchMode==='id'){
     const q = query.toLowerCase();
-    currentData = allData.filter(item => {
-      const idStr = (item.id ?? '').toString().toLowerCase();
-      return idStr.includes(q);
-    });
-  }else if (searchMode === 'username'){
+    currentData = allData.filter(it=> ((it.id??'').toString().toLowerCase()).includes(q));
+  }else if (searchMode==='username'){
     const q = query.toLowerCase();
-    currentData = allData.filter(item => (item.username||'').toLowerCase().includes(q));
+    currentData = allData.filter(it=> (it.username||'').toLowerCase().includes(q));
   }
 
-  // Show filtered results
-  FEED.innerHTML = '';
-  displayedCount = 0;
+  FEED.innerHTML='';
+  displayedCount=0;
   renderNextBatch();
-
-  // Show back button so the user can return to the full feed
-  BACK_BTN.style.display = 'inline-block';
+  BACK_BTN.style.display='inline-block';
 }
+SEARCH_BTN.addEventListener('click',applyFilter);
+SEARCH_INPUT.addEventListener('keydown',e=>{if(e.key==='Enter')applyFilter();});
 
-/* search button */
-SEARCH_BTN.addEventListener('click', applyFilter);
-
-/* hit Enter inside input */
-SEARCH_INPUT.addEventListener('keydown', e => {
-  if (e.key === 'Enter') applyFilter();
-});
-
-/* Back button – returns to the unfiltered view */
-BACK_BTN.addEventListener('click', () => {
-  SEARCH_INPUT.value = '';
-  searchMode = 'title';
-  SEARCH_INPUT.placeholder = 'Search by title...';
-  document.querySelectorAll('.search-filter-btn').forEach(btn=>btn.classList.remove('active'));
+/* ---------- Back button ---------- */
+BACK_BTN.addEventListener('click',()=>{
+  SEARCH_INPUT.value='';
+  searchMode='title';
+  SEARCH_INPUT.placeholder='Search by title...';
+  document.querySelectorAll('.search-filter-btn').forEach(b=>b.classList.remove('active'));
   SEARCH_MENU.classList.remove('show');
   SEARCH_TOGGLE.classList.remove('active');
 
   currentData = allData;
-  FEED.innerHTML = '';
-  displayedCount = 0;
+  FEED.innerHTML='';
+  displayedCount=0;
   renderNextBatch();
-  BACK_BTN.style.display = 'none';
-  window.scrollTo({top:0, behavior:'smooth'});
+  BACK_BTN.style.display='none';
+  window.scrollTo({top:0,behavior:'smooth'});
 });
 
-/* toggle extra‑filter menu */
-SEARCH_TOGGLE.addEventListener('click', () => {
+/* ---------- Search menu toggle ---------- */
+SEARCH_TOGGLE.addEventListener('click',()=>{
   const showing = SEARCH_MENU.classList.toggle('show');
-  SEARCH_TOGGLE.classList.toggle('active', showing);
+  SEARCH_TOGGLE.classList.toggle('active',showing);
 });
 
-/* extra‑filter buttons (ID / Username) */
-SEARCH_MENU.addEventListener('click', e => {
+/* ---------- Filter selection (ID / Username) ---------- */
+SEARCH_MENU.addEventListener('click',e=>{
   if (e.target.classList.contains('search-filter-btn')){
     const mode = e.target.dataset.mode;
     if (mode){
-      // toggle off if already selected
-      if (searchMode === mode){
-        searchMode = 'title';
-        SEARCH_INPUT.placeholder = 'Search by title...';
+      if (searchMode===mode){
+        searchMode='title';
+        SEARCH_INPUT.placeholder='Search by title...';
         e.target.classList.remove('active');
       }else{
-        searchMode = mode;
-        // set placeholder appropriate to the chosen mode
-        if (mode === 'id') SEARCH_INPUT.placeholder = 'Enter ID...';
-        else if (mode === 'username') SEARCH_INPUT.placeholder = 'Enter username...';
-        document.querySelectorAll('.search-filter-btn').forEach(btn=>btn.classList.remove('active'));
+        searchMode=mode;
+        SEARCH_INPUT.placeholder = mode==='id' ? 'Enter ID...' : 'Enter username...';
+        document.querySelectorAll('.search-filter-btn').forEach(b=>b.classList.remove('active'));
         e.target.classList.add('active');
       }
-      // hide the extra‑filter menu after a click
       SEARCH_MENU.classList.remove('show');
       SEARCH_TOGGLE.classList.remove('active');
     }
   }
 });
 
-/* --------------------------------------------------------------
-   Kick‑off – fetch JSON data
--------------------------------------------------------------- */
+/* ==================== Direct‑link handling ==================== */
+function openImageById(id){
+  const item = allData.find(it=> (it.id??'').toString()===id);
+  if (item){
+    openFullscreenImage(item.title,item.archive_url);
+  }
+}
+
+/* ==================== Fetch data ==================== */
 async function fetchData(){
   try{
-    const res  = await fetch(BACKEND_URL);
-    const data = await res.json();
-    LOADER.style.display = 'none';
+    const resp = await fetch(BACKEND_URL);
+    const data = await resp.json();
+    LOADER.style.display='none';
     if (!data || !data.length){
-      FEED.innerHTML = "<p style='text-align:center;color:#94a3b8'>No Images found 😢</p>";
+      FEED.innerHTML="<p style='text-align:center;color:#94a3b8'>No Images found 😢</p>";
       return;
     }
     allData = data;
-    currentData = allData;      // start with everything
+    currentData = allData;
 
     if (targetImageId){
-      // render everything so we can scroll to the shared card
+      // Build the whole feed so the target card exists
       renderAllData();
+
+      // Find the matching item
+      const targetItem = allData.find(it=> (it.id??'').toString()===targetImageId);
+      if (targetItem){
+        // Ensure the card is scrolled into view (highlight already added)
+        const cardEl = document.querySelector(`.card[data-id="${targetImageId}"]`);
+        if (cardEl){
+          cardEl.scrollIntoView({behavior:'smooth',block:'center'});
+        }
+        // Open the viewer a short moment after the scroll starts
+        setTimeout(()=>openFullscreenImage(targetItem.title,targetItem.archive_url), 600);
+      }
     }else{
       renderNextBatch();
     }
-  }catch(e){
-    LOADER.style.display = 'none';
-    FEED.innerHTML = "<p style='text-align:center;color:#f87171'>Error loading data 😞</p>";
-    console.error(e);
+  }catch(err){
+    LOADER.style.display='none';
+    FEED.innerHTML="<p style='text-align:center;color:#f87171'>Error loading data 😞</p>";
+    console.error(err);
   }
 }
 fetchData();
