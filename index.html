@@ -9,9 +9,11 @@
   <script src="https://cdn.tailwindcss.com"></script>
 
   <!-- Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&family=Pacifico&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&family=Pacifico&display=swap"
+        rel="stylesheet">
 
   <style>
+    /* ---------- BASIC LAYOUT ---------- */
     body {
       font-family: 'Poppins', sans-serif;
       background: radial-gradient(circle at top left, #0f172a, #1e293b);
@@ -24,7 +26,7 @@
       scroll-behavior: smooth;
     }
 
-    /* Glassmorphism */
+    /* ---------- GLASSMORPHISM ---------- */
     .glass {
       background: rgba(255, 255, 255, 0.08);
       backdrop-filter: blur(12px);
@@ -39,7 +41,7 @@
       box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
     }
 
-    /* Fade & glow effects */
+    /* ---------- ANIMATIONS ---------- */
     .fade-in {
       opacity: 0;
       transform: translateY(15px);
@@ -55,28 +57,28 @@
     }
     @keyframes glow {
       from { text-shadow: 0 0 10px #3b82f6; }
-      to { text-shadow: 0 0 25px #60a5fa, 0 0 50px #3b82f6; }
+      to   { text-shadow: 0 0 25px #60a5fa, 0 0 50px #3b82f6; }
     }
 
     .moving-text {
       animation: moveText 5s linear infinite;
     }
     @keyframes moveText {
-      0% { transform: translateX(-10px); }
-      50% { transform: translateX(10px); }
+      0%   { transform: translateX(-10px); }
+      50%  { transform: translateX(10px); }
       100% { transform: translateX(-10px); }
     }
 
     iframe {
       width: 100%;
       border: none;
-      border-radius: 1rem;
+      border-radius: 0;                 /* flush left/right */
       overflow: hidden;
       background: #0f172a;
       min-height: 450px;
     }
 
-    /* Fullscreen button */
+    /* ---------- FULLSCREEN BUTTON ---------- */
     .fullscreen-btn {
       position: absolute;
       top: 10px;
@@ -89,12 +91,25 @@
       font-weight: bold;
       cursor: pointer;
       transition: background 0.3s;
+      display: flex;
+      align-items: center;
+      gap: 4px;
     }
     .fullscreen-btn:hover {
       background: rgba(37, 99, 235, 0.9);
     }
+    .arrow-left  { color: #006400; font-weight: bold; }   /* dark‑green */
+    .arrow-right { color: #DAA520; font-weight: bold; }   /* gold‑ish yellow */
+    .fullscreen-symbol {
+      display: inline-block;
+      animation: spin 2s linear infinite;               /* motion effect */
+    }
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to   { transform: rotate(360deg); }
+    }
 
-    /* Train animation */
+    /* ---------- TRAIN ANIMATION ---------- */
     .train-container {
       position: relative;
       width: 100%;
@@ -105,7 +120,6 @@
       border-radius: 0.75rem;
       box-shadow: inset 0 0 20px rgba(59, 130, 246, 0.3);
     }
-
     .train-track {
       position: absolute;
       bottom: 5px;
@@ -121,9 +135,8 @@
     }
     @keyframes trackMove {
       from { background-position-x: 0; }
-      to { background-position-x: 40px; }
+      to   { background-position-x: 40px; }
     }
-
     .train {
       position: absolute;
       bottom: 8px;
@@ -133,11 +146,10 @@
       animation: trainMove 9s linear infinite;
     }
     @keyframes trainMove {
-      0% { left: -160px; }
-      50% { left: calc(100% - 100px); }
+      0%   { left: -160px; }
+      50%  { left: calc(100% - 100px); }
       100% { left: -160px; }
     }
-
     .car {
       width: 60px;
       height: 15px;
@@ -148,7 +160,6 @@
       box-shadow: 0 3px 8px rgba(37, 99, 235, 0.4);
       transform: skewX(-5deg);
     }
-
     .wheel {
       position: absolute;
       bottom: -4px;
@@ -159,14 +170,13 @@
       border-radius: 50%;
       animation: wheelSpin 0.5s linear infinite;
     }
-    .wheel.left { left: 5px; }
+    .wheel.left  { left: 5px; }
     .wheel.right { right: 5px; }
-
     @keyframes wheelSpin {
       100% { transform: rotate(360deg); }
     }
 
-    /* MOBILE */
+    /* ---------- RESPONSIVE ---------- */
     @media (max-width: 640px) {
       h1 { font-size: 1.8rem; }
       h2 { font-size: 1.25rem; }
@@ -174,9 +184,56 @@
       .train-container { height: 22px; }
       .car { width: 50px; height: 12px; }
     }
+
+    /* ---------- IMAGE‑SECTION OVERWRITES ---------- */
+    #images {
+      margin-left: -1rem;
+      margin-right: -1rem;
+      max-width: none;            /* allow full‑width */
+    }
+    @media (min-width: 640px) {
+      #images { margin-left: -1.5rem; margin-right: -1.5rem; }
+    }
+    #images .glass {
+      border-left: 0;
+      border-right: 0;
+      border-radius: 0;
+      padding-left: 0;
+      padding-right: 0;
+    }
+
+    /* ---------- FLOATING CHAT BUTTON ---------- */
+    #chatBot {
+      position: fixed;
+      right: 20px;
+      bottom: 80px;
+      background: linear-gradient(135deg, #1d4ed8, #2563eb);
+      width: 50px;
+      height: 50px;
+      border-radius: 9999px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.8rem;
+      color: #fff;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      transition: transform 0.2s;
+      z-index: 50;
+    }
+    #chatBot:hover { transform: scale(1.07); }
+
+    /* ---------- MODAL ---------- */
+    #feedbackModal {
+      background: rgba(0,0,0,0.5);
+      z-index: 100;
+    }
+    #feedbackModal .modal-content {
+      max-width: 500px;
+      width: 90%;
+    }
   </style>
 </head>
-
 <body class="p-4 sm:p-6 space-y-8">
 
   <!-- HEADER -->
@@ -195,21 +252,9 @@
     </p>
   </header>
 
-  <!-- SECTION 1: SEARCH & UPLOAD -->
-  <section id="metadata" class="w-full max-w-5xl glass p-6 fade-in">
-    <h2 class="text-2xl font-semibold text-blue-300 mb-4">🔍 Search & Upload Here</h2>
-    
-    <!-- Fullscreen button -->
-    <button class="fullscreen-btn" onclick="openFullscreen('iframeMetadata')">⛶ Fullscreen</button>
-
-    <iframe id="iframeMetadata" src="images_metadata_frontend.html" class="h-[450px] bg-slate-900"></iframe>
-  </section>
-
-  <!-- SECTION 2: IMAGE DISPLAY + MINI TRAIN -->
-  <section id="images" class="w-full max-w-5xl glass p-6 fade-in">
-    <h2 class="text-2xl font-semibold text-blue-300 mb-4">🚆 Enjoy the Journey of Images</h2>
-
-    <!-- Ultra-Slim Train Animation -->
+  <!-- IMAGE DISPLAY SECTION (with train) -->
+  <section id="images" class="w-full glass py-6 fade-in">
+    <!-- Train animation -->
     <div class="train-container mb-4">
       <div class="train-track"></div>
       <div class="train">
@@ -228,30 +273,89 @@
       </div>
     </div>
 
-    <!-- Fullscreen button -->
-    <button class="fullscreen-btn" onclick="openFullscreen('iframeImages')">⛶ Fullscreen</button>
+    <!-- Full‑screen button (arrows + rotating symbol) -->
+    <button class="fullscreen-btn" onclick="openFullscreen('iframeImages')">
+      <span class="arrow-left">--&gt;</span>
+      <span class="fullscreen-symbol">⛶</span>
+      <span class="arrow-right">&lt;--</span>
+    </button>
 
-    <!-- Embedded Image Display -->
-    <iframe id="iframeImages" src="images_displaying_frontend.html" class="h-[500px] bg-slate-900"></iframe>
+    <!-- Embedded image viewer -->
+    <iframe id="iframeImages" src="images_displaying.html" class="bg-slate-900"></iframe>
   </section>
 
   <!-- FOOTER -->
   <footer class="text-slate-500 text-sm mt-8 fade-in text-center pb-6">
-    <p>© 2025 Free Images Content · Built with ❤️ by <span class="text-blue-400 font-semibold">YAN</span></p>
+    <p>© 2026 Free Images Content · Built with ❤️ by <span class="text-blue-400 font-semibold">YAN</span></p>
   </footer>
 
-  <!-- Fullscreen JS -->
+  <!-- FLOATING CHAT BUTTON -->
+  <div id="chatBot">💬</div>
+
+  <!-- FEEDBACK MODAL -->
+  <div id="feedbackModal" class="fixed inset-0 hidden items-center justify-center">
+    <div class="modal-content bg-gray-900 text-white p-6 rounded-lg text-center">
+      <p class="mb-4">🔐 Login or sign up with GitHub to give the feedback.</p>
+      <p class="mb-4">
+        📺 Or click the video link
+        <a href="https://archive.org/details/panfda" target="_blank"
+           class="text-blue-400 underline">https://archive.org/details/panfda</a>
+        to know how to give feedback
+      </p>
+      <p>Redirecting in <span id="countdown">5</span> seconds...</p>
+    </div>
+  </div>
+
+  <!-- SCRIPTS -->
   <script>
+    // ----- Fullscreen handling -----
     function openFullscreen(iframeId) {
       const iframe = document.getElementById(iframeId);
       if (iframe.requestFullscreen) {
         iframe.requestFullscreen();
-      } else if (iframe.webkitRequestFullscreen) { /* Safari */
+      } else if (iframe.webkitRequestFullscreen) {    // Safari
         iframe.webkitRequestFullscreen();
-      } else if (iframe.msRequestFullscreen) { /* IE11 */
+      } else if (iframe.msRequestFullscreen) {      // IE11
         iframe.msRequestFullscreen();
       }
     }
+
+    // ----- Chat‑modal logic -----
+    const chatBot        = document.getElementById('chatBot');
+    const feedbackModal = document.getElementById('feedbackModal');
+    const countdownEl   = document.getElementById('countdown');
+    const redirectUrl   = 'https://github.com/OpenThoughtVoice/OpenThoughtVoice/discussions/2';
+    let countdownTimer  = null;
+
+    chatBot.addEventListener('click', () => {
+      // Show modal
+      feedbackModal.classList.remove('hidden');
+      feedbackModal.classList.add('flex');
+
+      // Initialise countdown
+      let remaining = 5;
+      countdownEl.textContent = remaining;
+
+      // Start timer
+      countdownTimer = setInterval(() => {
+        remaining--;
+        countdownEl.textContent = remaining;
+        if (remaining <= 0) {
+          clearInterval(countdownTimer);
+          // ---- FIX: perform navigation instead of popup (prevents blocker) ----
+          window.location.href = redirectUrl;
+        }
+      }, 1000);
+    });
+
+    // Clicking outside the modal closes it & stops the timer
+    feedbackModal.addEventListener('click', (e) => {
+      if (e.target === feedbackModal) {
+        feedbackModal.classList.add('hidden');
+        feedbackModal.classList.remove('flex');
+        clearInterval(countdownTimer);
+      }
+    });
   </script>
 </body>
 </html>
