@@ -444,8 +444,14 @@ PDF_CONTENT.addEventListener('touchend',e=>{
 
 /* ==================== Upload overlay ==================== */
 function openUploadOverlay(){
+  /* -------------------------------------------------------------
+     CHANGE: Previously this loaded *images_displaying.html*.  It now
+     loads *images_uploading.html* (which resides in the same repo).
+     The overlay already occupies the full viewport, providing the
+     desired 100 % screen experience.
+     ------------------------------------------------------------- */
   UPLOAD_OVERLAY.classList.add('active');
-  document.querySelector('.upload-iframe').src = 'images_displaying.html';
+  document.querySelector('.upload-iframe').src = 'images_uploading.html';
 }
 function closeUpload(){
   UPLOAD_OVERLAY.classList.remove('active');
