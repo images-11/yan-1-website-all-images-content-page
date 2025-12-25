@@ -250,7 +250,9 @@ let displayedCount = 0;
 let loading = false;
 let searchMode = 'title';    // 'title' (default), 'id', 'username'
 const BATCH_SIZE = 30;
-const SHARE_BASE_URL = window.location.origin + window.location.pathname; // current page URL without query
+
+/* ---- Fixed share‑link base (the URL you asked for) ---- */
+const SHARE_BASE_URL = 'https://yan-1-related-1.github.io/yan-1-website-shared-links-redirecting/all-images-content-page-shared-links-redirecting.html';
 
 /* ==================== URL handling ==================== */
 const urlParams = new URLSearchParams(window.location.search);
