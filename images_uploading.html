@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Archive Upload</title>
+  <style>
+    :root {
+      --bg: #0f1724;
+      --card: #111827;
+      --accent: #60a5fa;
+      --text: #e2e8f0;
+      --muted: #94a3b8;
+      --radius: 16px;
+      --transition: 0.3s ease;
+    }
+
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 480px;
+      padding: 20px;
+    }
+
+    .card {
+      background: var(--card);
+      border-radius: var(--radius);
+      padding: 20px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.3);
+      transition: var(--transition);
+    }
+
+    input,
+    button {
+      font-size: 1rem;
+      border: none;
+      outline: none;
+      border-radius: var(--radius);
+      transition: var(--transition);
+    }
+
+    input {
+      flex: 1;
+      padding: 12px 16px;
+      background: #1f2937;
+      color: var(--text);
+    }
+
+    input:focus {
+      background: #273549;
+      box-shadow: 0 0 0 2px var(--accent);
+    }
+
+    button {
+      background: var(--accent);
+      color: #fff;
+      cursor: pointer;
+      padding: 12px 16px;
+      font-weight: 500;
+    }
+
+    button:hover {
+      opacity: 0.9;
+      transform: scale(1.03);
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      margin-top: 15px;
+    }
+
+    .success,
+    .error {
+      text-align: center;
+      font-weight: 500;
+      margin-top: 10px;
+    }
+
+    .success { color: #4ade80; }
+    .error   { color: #f87171; }
+
+    .animated { animation: fadeIn 0.5s ease forwards; }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="container">
+    <!-- Upload Page -->
+    <div id="uploadPage" class="card animated">
+      <form id="uploadForm">
+        <input type="url" id="archive_url" placeholder="Enter Archive.org URL" required />
+        <input type="text" id="title" placeholder="Enter Title" required />
+        <input type="text" id="username" placeholder="Enter Username" required />
+        <input type="tel" id="phone_number" placeholder="Enter Phone Number" required />
+        <button type="submit">📤 Post</button>
+      </form>
+      <div id="message"></div>
+    </div>
+  </div>
+
+  <script>
+    /* --------------------------------------------------------------
+       Configuration / element cache
+       -------------------------------------------------------------- */
+    const API_BASE = "https://images_metadata_backend.erenyeager6880.workers.dev";
+
+    const form    = document.getElementById("uploadForm");
+    const message = document.getElementById("message");
+
+    /* --------------------------------------------------------------
+       Upload handling (unchanged from original)
+       -------------------------------------------------------------- */
+    form.onsubmit = async (e) => {
+      e.preventDefault();
+
+      // Reset message
+      message.textContent = "Uploading...";
+      message.className = "";
+
+      const archiveUrl = document.getElementById("archive_url").value.trim();
+      const archivePattern = /^https?:\/\/(www\.)?archive\.org\/(details|embed)\/[A-Za-z0-9_\-]+/i;
+      if (!archivePattern.test(archiveUrl)) {
+        message.textContent = "❌ Please enter a valid Archive.org URL!";
+        message.className = "error";
+        return;
+      }
+
+      const payload = {
+        archive_url: archiveUrl,
+        title: document.getElementById("title").value.trim(),
+        username: document.getElementById("username").value.trim(),
+        phone_number: document.getElementById("phone_number").value.trim()
+      };
+
+      try {
+        const res = await fetch(`${API_BASE}/upload`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+        const json = await res.json();
+
+        if (res.ok && json.success) {
+          message.textContent = "✅ Upload successful!";
+          message.className = "success";
+          form.reset();
+        } else {
+          message.textContent = `❌ Upload failed: ${json.error || "Server error"}`;
+          message.className = "error";
+        }
+      } catch (err) {
+        console.error(err);
+        message.textContent = "⚠️ Network error. Please try again.";
+        message.className = "error";
+      }
+    };
+  </script>
+
+</body>
+</html>
